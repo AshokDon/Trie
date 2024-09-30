@@ -1,83 +1,85 @@
-#include <bits/stdc++.h>
-#define fast_io ios_base::sync_with_stdio(false);cin.tie(NULL)
-#define ll long long
-#define pb push_back
+#include<bits/stdc++.h>
 using namespace std;
-const int mod = (int)1e9 + 7;
-
-
-void TakeInput(){
-    #ifndef ONLINE_JUDGE
-    freopen("input.txt", "r", stdin);
-    freopen("output.txt", "w", stdout);
-    #endif
-}
-struct Trie{
-	Trie *arr[52];
-	bool flage = false;
-	bool Contains(char ch){
-		if(ch >= 97 and ch <= 122){
-			return arr[ch-'a'+26]!=NULL;
-		}
-		else return arr[ch-'A']!=NULL;
-	}
-	void Put(char ch, Trie *node){
-		if(ch >= 97 and ch <= 122){
-			arr[ch-'a'+26]=node;
-		}
-		else arr[ch-'A']=node;
-	}
-	Trie *GetNext(char ch){
-		if(ch >= 97 and ch <= 122){
-			return arr[ch-'a'+26];
-		}
-		else return arr[ch-'A'];
-	}
-	void Set(){
-		flage = true;
-	}
-	bool End(){
-		return flage;
-	}
-
-};
-Trie *root = new Trie();
-void Insert(string word){
-	Trie *temp = root;
-	for(int i = 0 ; i < word.size() ; i++){
-		if(!temp->Contains(word[i])){
-			temp->Put(word[i],new Trie());
-		}
-		temp = temp->GetNext(word[i]);
-	}
-	temp->Set();
-}
-int main() {
+class Node{
+    private:
+    //i need an array that can give acess to 26 charaters
+    Node *array[26];
+    bool flage; // i need a flage to check the word ends or not
+    public:
+    Node(){ // constructer 
+        for(int i = 0 ; i < 26 ; i++){
+            array[i] = nullptr; // all 26 to null
+        }
+        flage = false; // set initially flage as false
+    }
+    //used to check the charater is present or not
+    bool constains(char ch){ 
+        return array[ch-'a']!=nullptr; 
+        //if not exist --> false;
+        //if exist --> true;
+    }
+    //this will help you to place the charater
+    void put(char ch, Node *node){
+        array[ch-'a'] = node;
+    }
+    //it will help you to move to next 
+    Node* getNext(char ch){
+        return array[ch-'a'];
+    }
+    //if word ends make flage as true
+    void set(){
+        flage = true;
+    }
+    bool End(){
+        return flage;
+        
+    }
     
-    fast_io;
-    TakeInput();
-    int n;
-    cin >> n;
-    vector<string>dictionary;
-    for(int i = 0 ; i < n ; i++){
-    	string s;
-    	cin >> s;
-    	dictionary.pb(s);
-    }
-    int r,c;
-    cin >> r >> c;
-    char board[r][c];
-    for(int i = 0 ; i < r ; i++){
-    	for(int j = 0 ; j < c ; j++){
-    		char c;
-    		cin >> c;
-    		board[i][j]=c;
-    	}
-    }
-    for(int i = 0 ; i < n ; i++){
-    	Insert(dictionary[i]);
-    }
- 
+};
 
-    return 0;
+class TrieDS{
+    private:
+    Node *root = new Node();
+    
+    public:
+    //insert
+    void Insert(string &word){
+        Node *temp = root;
+        for(char ch : word){
+            if(!temp->constains(ch)){
+                temp->put(ch,new Node());
+            }
+            temp = temp->getNext(ch);
+        }
+        temp->set();
+    }
+    //search
+    bool Search(string &word){
+        Node *temp = root;
+        for(char ch : word){ // 
+            if(!temp->constains(ch)){
+                return false;
+            }
+            temp = temp->getNext(ch);
+        }
+        return temp->End();
+    }
+    
+    
+};
+
+int main(){
+    string s = "abcdabcdef";
+    vector<string>words = {"abcd","xyz","abcdef","ab"};
+    TrieDS trie;
+    for(string word : words){
+        trie.Insert(word);
+    }
+    string str = "abc";
+    if(trie.Search(str)){
+        cout << "YES\n";
+    }
+    else{
+        cout << "NO\n";
+    }
 }
